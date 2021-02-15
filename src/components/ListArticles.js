@@ -9,7 +9,7 @@ class ListArticles extends React.Component{
 
     render(){
         return(
-            <section className=''>
+            <section className='mx-2'>
                <div className='flex flex-row'>
                     <div className='article-type-button '>
                         <h3 onClick={this.props.handleAllArticles} className='text-xl cursor-pointer font-bold text-shadow-sm underline text-red-500'>All Articles</h3>
@@ -20,7 +20,7 @@ class ListArticles extends React.Component{
                     </div> :'' )
                    }
                </div>
-                <div className='articles flex flex-1 flex-row w-full h-full'>
+                <div className='articles  flex-1 grid grid-cols-3 gap-1 w-full h-full'>
                     {
                         (!this.props.articles ? <Loader /> :
                               this.props.articles.map((article) => {
@@ -38,7 +38,7 @@ class ListArticles extends React.Component{
 
 function Article(props){
     return(
-     <div className='flex flex-col w-96 h-82 shadow-xl py-2 px-6  '>
+     <div className='flex flex-col justify-between  h-82 shadow-xl py-2 mx-2 px-4  '>
         <div className='flex flex-row '>
             <div className='w-10  '>
                 <img className='w-full h-10 rounded-full' src='/images/user-1.jpg' alt=''></img>
@@ -54,7 +54,7 @@ function Article(props){
              <Link to={`/article/${props.article.slug}`}>
                  <h3 className='font-bold '>{props.article.title}</h3>
              </Link>
-             <p className='font-medium text-gray-600'>{props.article.description}</p>
+             <p className='font-medium text-gray-600'>{props.article.description.slice(0,100)}</p>
          </div>
         <div className='flex my-1 flex-col justify-between'>
             <div className='flex flex-row justify-between my-2'>

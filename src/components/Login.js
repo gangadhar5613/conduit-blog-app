@@ -1,5 +1,6 @@
+import { data } from 'autoprefixer'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import {validateEmail,validatePassword} from './SignUp'
 
 class Login extends React.Component{
@@ -12,7 +13,9 @@ class Login extends React.Component{
             errors :{
                 email:'',
                 password: ''
-            }
+            },
+            isUserLoggedin:false
+
         }
     }
 
@@ -35,8 +38,34 @@ class Login extends React.Component{
 
     }
 
+    handlelogin = async (event) => {
+        event.preventDefault()
+        let user = {
+            "user":{
+                "email":this.state.email,
+                "password":this.state.password
+            }
+        }
+
+       try {
+      await  fetch('/api/users/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)})
+        .then((res) => res.json())
+        .then((data) => localStorage.setItem('user',JSON.stringify(data.user)))
+        .then(() => this.setState({isUserLoggedin:true}))
+        window.location.href = 'http://localhost:3000/'
+
+        
+        
+       } catch (error) {
+           console.error('Error',error)
+       }
+    }
+
        
     render(){
+        if(localStorage.getItem('user') || this.state.isUserLoggedin){
+            return <Redirect  to='/' />
+        }else{
         return(
             <section className='h-screen overflow-hidden bg-gray-100 flex items-center justify-center' >
                    <div className=  ' w-96 h-96 p-3  rounded-md shadow-xl'>
@@ -56,7 +85,7 @@ class Login extends React.Component{
                                     <span className='text-red-500 text-sm my-1'>{this.state.errors.password ? this.state.errors.password : ''}</span>
                                 </div>
                                 <div className='flex justify-center my-4'>
-                                    <button className='bg-red-800 py-2 px-6 text-white rounded-sm' type='submit' >Submit</button>
+                                    <button onClick={this.handlelogin} className='bg-red-800 py-2 px-6 text-white rounded-sm' type='submit' >Login</button>
                                 </div>
                                 <div className='flex flex-row text-center justify-center'>
                                     <h2 className='text-md font-bold text-green-800'>Not Registered Yet? </h2>
@@ -69,7 +98,9 @@ class Login extends React.Component{
                    </div>
             </section>
         )
+    
     }
+  }
 }
 
 export default Login

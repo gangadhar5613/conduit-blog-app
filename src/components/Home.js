@@ -13,7 +13,8 @@ class Home extends React.Component{
             articles:null,
             tags:null,
             activeTagArticles:null,
-            activeTag:null
+            activeTag:null,
+            acitveUser:( JSON.parse( localStorage.getItem('user')) ? JSON.parse( localStorage.getItem('user')) : null )
         }
     }
 
@@ -50,17 +51,19 @@ class Home extends React.Component{
 
         return(
           <>
-            <Banner />
-             <section className='flex flex-row mx-10 justify-between my-2'>
-                  {
-                    ((!this.state.tags || !this.state.articles) ? <Loader /> :
-                    <>
-                      <ListArticles handleAllArticles ={this.handleAllArticles} articles={this.state.articles.articles} activeTag={this.state.activeTag} activeTagArticles={(this.state.activeTagArticles ? this.state.activeTagArticles.articles : '')} />
-                      <Tags handleTag={this.handleTag} tags={this.state.tags.tags} />
-                    </>
-                    )
-                  }
-             </section>
+           <main className='conatiner mx-auto'>
+              <Banner />
+                <section className='flex flex-row mx-10  my-2'>
+                      {
+                        ((!this.state.tags || !this.state.articles) ? <Loader /> :
+                        <>
+                          <ListArticles activeUser={this.state.acitveUser} handleAllArticles ={this.handleAllArticles} articles={this.state.articles.articles} activeTag={this.state.activeTag} activeTagArticles={(this.state.activeTagArticles ? this.state.activeTagArticles.articles : '')} />
+                          <Tags handleTag={this.handleTag} tags={this.state.tags.tags} />
+                        </>
+                        )
+                      }
+                </section>
+           </main>
           </>
         )
     }

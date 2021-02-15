@@ -10,11 +10,11 @@ class Tags extends React.Component{
     render(){
         return(
 
-            <section className='shadow-lg text-center bg-red-200 py-4 w-96 h-32'>
+            <section className='shadow-lg text-center bg-red-200 py-4 w-96  h-32'>
                 <div>
                     <h2 className='text-md font-bold'>Popular Tags</h2>
                 </div>
-                <div className='tags py-2 items-center justify-center flex flex-row'>
+                <div className='tags py-2 items-center justify-between flex-wrap  flex flex-row'>
                     {
 
                         (!this.props.tags ? <Loader /> : 
@@ -34,7 +34,7 @@ class Tags extends React.Component{
 
 export function SingleTag(props){
    return(
-    <h4 onClick={props.handleTag} id={props.tag} className='bg-red-400 mx-1 shadow-md text-white px-1 py-0.5 rounded-full'>{props.tag}</h4>
+    <h4 onClick={props.handleTag} id={props.tag} className='bg-red-400 my-1 text-xs mx-1 shadow-md text-white px-1 py-0.5 rounded-full'>{props.tag}</h4>
    )
 }
 
