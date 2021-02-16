@@ -15,7 +15,7 @@ class SignUp extends React.Component{
                password:'',
                username:'',
             },
-            isUserSignup:false
+            // isUserSignup:false
 
         }
     }
@@ -30,8 +30,6 @@ class SignUp extends React.Component{
                    "password":this.state.password
                }
            }
-
-
            try {          
              await   fetch(`/api/users`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)})
                 .then((res) => res.json())
@@ -39,9 +37,6 @@ class SignUp extends React.Component{
                 .then((data) => console.log(data.user))
                 .then(() => this.setState({isUserSignup:true}))
                 window.location.href = 'http://localhost:3000/'
-                
-
-
            } catch (error) {
                console.error('Error',error)
            }
@@ -76,7 +71,7 @@ class SignUp extends React.Component{
        
     render(){
 
-        if(localStorage.getItem('user') || this.state.isUserSignup){
+        if(localStorage.getItem('user')){
             return   <Redirect to='/' />
         } else{
         return(
