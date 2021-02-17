@@ -1,11 +1,11 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
+import {Link,NavLink} from 'react-router-dom'
 
 function Header(props){
 
     let currentUser = (JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user')) : null ) 
     return(
-         <header className='flex flex-row justify-between fixed top-0  overscroll-y-bg-transparent  overflow-hidden  items-center container px-10 py-2 bg-gray-100 text-black shadow-lg'>
+         <header className='flex flex-row z-10 justify-between fixed top-0 container mx-auto  overscroll-y-bg-transparent  overflow-hidden  items-center container px-10 py-2 bg-gray-100 text-black shadow-lg'>
              <div className='logo py-2'>
                  <h1 className='text-3xl font-bold text-shadow-lg text-black '>Conduit</h1>
              </div>
@@ -15,23 +15,24 @@ function Header(props){
                 </div>
                 <div>
                     <nav className='flex flex-row items-center'>
-                        <Link to='/' className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
+                        <NavLink exact activeStyle={{ fontWeight: "bold",  color: "red"}} activeClassName='selected' to='/' className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
                             Home
-                        </Link>
-                        <Link to={localStorage.getItem('user')? `/${JSON.parse(localStorage.getItem('user')).username}` : '/signup'} className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
-                        {localStorage.getItem('user')? `${JSON.parse(localStorage.getItem('user')).username}` : 'Signup'}
-                        </Link>
+                        </NavLink>
+
+                        <NavLink exact activeStyle={{ fontWeight: "bold",  color: "red"}} activeClassName='selected' to={localStorage.getItem('user')? `/user/profile` : '/signup'} className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
+                            {localStorage.getItem('user')? `${JSON.parse(localStorage.getItem('user')).username}` : 'Signup'}
+                        </NavLink>
                          {
                              (localStorage.getItem('user') ? 
-                             <Link  onClick={handleLogout} className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
+                             <NavLink exact activeStyle={{ fontWeight: "bold",  color: "red"}} activeClassName='selected' to='/logout' onClick={handleLogout} className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
                                 Logout 
-                             </Link>
+                             </NavLink>
 
                              :
 
-                              <Link  to='/login' className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
+                              <NavLink exact activeStyle={{ fontWeight: "bold",  color: "red"}} activeClassName='selected'  to='/login' className='text-xl mx-2 text-red-800 text-shadow-sm font-bold'>
                                       Login
-                             </Link>
+                             </NavLink>
                              )
                          }
                     </nav>

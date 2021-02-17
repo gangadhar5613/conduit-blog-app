@@ -1,6 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 import Loader from './Loader'
+import {SingleTag} from './Tags'
 class UserInfo extends React.Component{
     constructor(props){
         super(props)
@@ -12,14 +13,28 @@ class UserInfo extends React.Component{
 
     componentDidMount(){
         fetch(`/api/articles/?author=${JSON.parse(localStorage.getItem('user')).username}`)
-        .then((res) => res.json())
+        .then((res) => {
+          if(!res.ok){
+            throw new Error(res.statusText)
+          }else{
+            return res.json()
+          }
+      }
+      )
         .then((articles) => this.setState({allArticles:articles.articles}))
     }
 
     handleFavoriterticles = () => {
         this.setState({allArticles:null})
         fetch(`/api/articles/feed`,{method:'GET',headers:{'Content-Type':'application/json','Authorization': JSON.parse(localStorage.getItem('user')).token}})
-        .then((res) => res.json())
+        .then((res) => {
+          if(!res.ok){
+            throw new Error(res.statusText)
+          }else{
+            return res.json()
+          }
+      }
+      )
         .then((articles) => this.setState({allArticles:articles.articles}))
     }
 
@@ -54,7 +69,7 @@ class UserInfo extends React.Component{
                          {
                              (!this.state.allArticles ?  <Loader /> :
                                    this.state.allArticles.map((article) => {
-                                       return <Card article={article} />
+                                       return <Card key={article.id} article={article} />
                                    })
                                 )
                          }
@@ -92,14 +107,11 @@ function Card(props){
               <span className="py-6 text-blue-600 ">Read More</span>
             </Link>
             <div className="flex mx-10 flex-row">
-              <div className="mx-4 text-shadow-xl text-gray-800">
-                <i className="fas text-blue-800 fa-tag"></i>
-                <span>Tech</span>
-              </div>
-              <div className="mx-4  text-shadow-xl text-gray-800">
-                <i className="fas text-blue-800 fa-tag"></i>
-                <span>Tech</span>
-              </div>
+                {
+                  props.article.tagList.map((tag) => {
+                    return <SingleTag tag={tag} />
+                  })
+                }
             </div>
           </div>
         </div>

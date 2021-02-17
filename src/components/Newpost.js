@@ -11,16 +11,9 @@ class NewPost extends React.Component{
                 description:'',
                 body:'',
                 tags:'',
-            
-        
-        }
-        
-       
-        
+                pageError:''
+        }   
     }
-
-    
-
     updateEditorState = (editorState) => {
         this.setState({editorState})
     }
@@ -38,8 +31,6 @@ class NewPost extends React.Component{
 
     handleInput = (event) => {
        const {name,value} = event.target
-
-
        switch (name) {
            case 'title':
                 this.setState({title:value})
@@ -65,13 +56,19 @@ class NewPost extends React.Component{
               description:this.state.description,
               body:JSON.stringify(this.state.body),
               tagList:this.state.tags,
-
           }
       }
 
       fetch(`/api/articles`,{method:'POST',headers:{'Content-Type':'application/json','Authorization': JSON.parse(localStorage.getItem('user')).token},body:article})
-      .then((res) => res.json())
+      .then((res) => {
+        if(!res.ok){
+          throw new Error(res.statusText)
+        }else{
+          return res.json()
+        }
+        })
       .then((data) => console.log(data))
+      .catch((error) => this.setState({pageError:'Not able to fetch the articles'}))
     }
 
 

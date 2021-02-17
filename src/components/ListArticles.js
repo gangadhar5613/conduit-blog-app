@@ -9,7 +9,7 @@ class ListArticles extends React.Component{
 
     render(){
         return(
-            <section className='mx-2'>
+            <section className='mx-2 z-0'>
                <div className='flex flex-row'>
                     <div className='article-type-button '>
                         <h3 onClick={this.props.handleAllArticles} className='text-xl cursor-pointer font-bold text-shadow-sm underline text-red-500'>All Articles</h3>
@@ -20,11 +20,11 @@ class ListArticles extends React.Component{
                     </div> :'' )
                    }
                </div>
-                <div className='articles  flex-1 grid grid-cols-3 gap-1 w-full h-full'>
+                <div className='articles  flex-1 flex flex-col gap-1 w-full h-full'>
                     {
                         (!this.props.articles ? <Loader /> :
                               this.props.articles.map((article) => {
-                               return <Article article={article} />
+                               return <Article key={article.id} article={article} />
                             })
                         )
                     }
@@ -36,46 +36,47 @@ class ListArticles extends React.Component{
 }
 
 
+
+
 function Article(props){
     return(
-     <div className='flex flex-col justify-between  h-82 shadow-xl py-2 mx-2 px-4  '>
-        <div className='flex flex-row '>
-            <div className='w-10  '>
-                <img className='w-full h-10 rounded-full' src='/images/user-1.jpg' alt=''></img>
+        <div className="px-4   bg-transparent py-2 mx-20 my-4 rounded  shadow-md  flex flex-row items-center  ">
+            <div className=" flex flex-col justify-between ">
+            <img
+                className="w-20 h-20 rounded-full"
+                src={props.article.image ? props.article.image : "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZHVjdHxlbnwwfDJ8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"}
+                alt="product"
+            ></img>
             </div>
-            <div className='flex mx-2 my-1 flex-col'>
-                <Link >
-                   <h2 className='text-md font-bold hover:underline text-shadow-sm text-red-800'>{props.article.author.username}</h2>
-                </Link>
-                <h3 className='text-xs text-gray-500'>{props.article.createdAt.toLocaleString()}</h3>
+            <div className="flex flex-col">
+            <div className="flex flex-col py-2">
+                    <div className="px-1 leading-5">
+                      <Link to={`/article/${props.article.slug}`}>
+                        <h2 className="text-2xl py-2 text-black">
+                            {props.article.title}
+                        </h2>
+                      </Link >
+                        <p className="text-sm py-2 text-gray-600">
+                            {props.article.description.slice(0,100)}
+                        </p>
+                    </div>
             </div>
-        </div>
-         <div className='my-1'>
-             <Link to={`/article/${props.article.slug}`}>
-                 <h3 className='font-bold '>{props.article.title}</h3>
-             </Link>
-             <p className='font-medium text-gray-600'>{props.article.description.slice(0,100)}</p>
-         </div>
-        <div className='flex my-1 flex-col justify-between'>
-            <div className='flex flex-row justify-between my-2'>
-                <div>
-                    <button className='text-xl font-bold text-blue-500 underline'>Read More</button>
-                </div>
-                <div>
-                    <Link>
-                        <i className="far text-xl  fa-heart"></i>
+            <div className=" items-center flex flex-row">
+                    <Link to={`/article/${props.article.slug}`}>
+                        <span className="py-6  text-blue-600 ">Read More</span>
                     </Link>
+                    <div className="flex mx-5 flex-row">
+                        <div className="flex mx-10 flex-row">
+                            {
+                            props.article.tagList.map((tag) => {
+                                return <SingleTag tag={tag} />
+                            })
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className='tags py-2 flex flex-row'>
-                {
-                    props.article.tagList.map((tag) => {
-                        return       <SingleTag tag={tag} />
-                    })
-                }
-            </div>
-        </div>
-     </div>
+      </div>
     )
 }
 

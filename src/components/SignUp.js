@@ -9,6 +9,7 @@ class SignUp extends React.Component{
         this.state={
             username:'',
             email:'',
+            pageError:'',
             password:'',
             errors :{
                 email:'',
@@ -32,10 +33,18 @@ class SignUp extends React.Component{
            }
            try {          
              await   fetch(`/api/users`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)})
-                .then((res) => res.json())
+             .then((res) => {
+                if(!res.ok){
+                  throw new Error(res.statusText)
+                }else{
+                  return res.json()
+                }
+                })
                 .then((data) => localStorage.setItem('token',data.user.token))
                 .then((data) => console.log(data.user))
                 .then(() => this.setState({isUserSignup:true}))
+                .catch((error) => this.setState({pageError:'Not able to fetch the articles'}))
+
                 window.location.href = 'http://localhost:3000/'
            } catch (error) {
                console.error('Error',error)

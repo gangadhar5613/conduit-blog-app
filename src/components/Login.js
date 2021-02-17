@@ -10,6 +10,7 @@ class Login extends React.Component{
         this.state={
             email:'',
             password:'',
+            pageError:'',
             errors :{
                 email:'',
                 password: ''
@@ -47,18 +48,18 @@ class Login extends React.Component{
             }
         }
 
-       try {
       await  fetch('/api/users/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)})
-        .then((res) => res.json())
+      .then((res) => {
+        if(!res.ok){
+          throw new Error(res.statusText)
+        }else{
+          return res.json()
+        }
+       })
         .then((data) => localStorage.setItem('user',JSON.stringify(data.user)))
         .then(() => this.setState({isUserLoggedin:true}))
+        .catch((error) => this.setState({pageError:'Not able to fetch the articles'}))
         window.location.href = 'http://localhost:3000/'
-
-        
-        
-       } catch (error) {
-           console.error('Error',error)
-       }
     }
 
        

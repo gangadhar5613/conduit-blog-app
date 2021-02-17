@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom'
 import Loader from './Loader'
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm'
+import Comment from './Comment'
 
 class SingleArticle extends React.Component{
     constructor(props){
@@ -13,21 +14,37 @@ class SingleArticle extends React.Component{
             article:null,
             comment:'',
             allComments:null,
+            pageError:''
 
         
         }
     }
-
-   
     componentDidMount(){
         fetch(`/api/articles/${this.props.match.params.slug}`)
-        .then((res) => res.json())
+        .then((res) => {
+            if(!res.ok){
+              throw new Error(res.statusText)
+            }else{
+              return res.json()
+            }
+        }
+        )
         .then((article) => {
             this.setState({article:article})
         })
+        .catch((error) => this.setState({pageError:'Not able to fetch the article'}))
+
+
       fetch(`/api/articles/${this.props.match.params.slug}/comments`)
-        .then((res) => res.json())
+      .then((res) => {
+        if(!res.ok){
+          throw new Error(res.statusText)
+        }else{
+          return res.json()
+        }
+        })
         .then((comments) => this.setState({allComments:comments.comments}) )
+        .catch((error) => this.setState({pageError:'Not able to fetch the comments'}))
     }
 
     handleComment = (event) => {
@@ -44,15 +61,22 @@ class SingleArticle extends React.Component{
 
     submitComment = async (event) => {
        event.preventDefault();
-       
         const comment = {
             "comment":{
                 body:this.state.comment
             }
         }
         await fetch(`/api/articles/${this.props.match.params.slug}/comments`,{method:'POST',headers:{'Content-Type':'application/json','Authorization': JSON.parse(localStorage.getItem('user')).token},body:JSON.stringify(comment)})
-        .then((res) => res.json())
+        .then((res) => {
+            if(!res.ok){
+              throw new Error(res.statusText)
+            }else{
+              return res.json()
+            }
+          })
         .then((comment) =>this.setState({allComments:this.state.allComments.concat(comment.comment)}) ) 
+        .catch((error) => this.setState({pageError:'Not able to post the comment'}))
+
     }
 
     handleDeleteComment = (event) => {
@@ -60,20 +84,28 @@ class SingleArticle extends React.Component{
         const commentId = event.target.id
 
         fetch(`/api/articles/${this.props.match.params.slug}/comments/${commentId}`,{method:'DELETE',headers:{'Content-Type':'application/json','Authorization': JSON.parse(localStorage.getItem('user')).token}})
-        .then((res) => res.json())
+        .then((res) => {
+            if(!res.ok){
+              throw new Error(res.statusText)
+            }else{
+              return res.json()
+            }
+        })
         .then((data) => console.log(data))
-        
+        .catch((error) => this.setState({pageError:'Not able to delete the comment'}))        
     }
 
     render(){
-        console.log('single')
+        if(this.state.pageError){
+            return <p className='my-20 text-3xl text-center text-shadow-sm'>{this.state.pageError}</p>
+        }
         return(
             <article className='flex items-center my-20 px-60 justify-center container'>
                     {
                         (!this.state.article ? <Loader /> :
                             <section className='article-body'>
                                 <div>
-                                    <div className='flex flex-row my-5 '>
+                                    <div className='flex flex-row my-5 items-center '>
                                         <div className='w-10  '>
                                             <img className='w-full h-10 rounded-full' src='/images/user-1.jpg' alt=''></img>
                                         </div>
@@ -83,6 +115,13 @@ class SingleArticle extends React.Component{
                                             </Link>
                                             <h3 className='text-xs text-gray-500'>{this.state.article.article.createdAt.toLocaleString()}</h3>
                                         </div>
+                                        {
+                                           ((JSON.parse(localStorage.getItem('user')).username === this.state.article.article.author.username) ?
+                                            <Link to={`/article/${this.state.article.article.slug}/edit`} >
+                                                <i className="fas text-4xl mx-2 text-red-400 cursor-pointer fa-edit"></i>
+                                            </Link>
+                                             : '')
+                                        }
                                     </div>
                                     <div className='flex flex-col'>
                                         <h2 className='text-3xl my-2 font-bold'>{this.state.article.article.title}</h2>
@@ -119,25 +158,7 @@ class SingleArticle extends React.Component{
                                                        (!this.state.allComments ?  'Add Comments' : 
                                                              this.state.allComments.map((comment) => {
                                                                  return(
-                                                                        <div className='flex flex-row items-center py-2   justify-between my-2 border-2 border-gray-300 '>
-                                                                            <div className='flex items-center'>
-                                                                                <div className='w-5  '>
-                                                                                    <img className='w-full h-5 rounded-full' src='/images/user-1.jpg' alt=''></img>
-                                                                                </div>
-                                                                                <div className='flex mx-2 my-1 flex-col'>
-                                                                                    <Link >
-                                                                                    <h2 className='text-xs font-bold hover:underline text-shadow-sm text-red-800'>{this.state.article.article.author.username}</h2>
-                                                                                    </Link>
-                                                                                    <h3 className='text-xs text-gray-500'>{this.state.article.article.createdAt.toLocaleString()}</h3>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className='mx-5'>
-                                                                                <h3 className='text-md font-bold'>{comment.body}</h3>
-                                                                            </div>
-                                                                            <div>
-                                                                                <button onClick={this.handleDeleteComment} id={comment._id} className='  shadow-lg bg-gray-100 py-2 px-4'>Delete</button>
-                                                                            </div>
-                                                                        </div>
+                                                                       <Comment key={comment.id} comment={comment} />
                                                                  )
                                                              })
                                                        )
