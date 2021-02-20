@@ -16,8 +16,6 @@ class SignUp extends React.Component{
                password:'',
                username:'',
             },
-            // isUserSignup:false
-
         }
     }
 
@@ -26,13 +24,12 @@ class SignUp extends React.Component{
         event.preventDefault()
            const user = {
                "user":{
-                   "username":this.state.username,
-                   "email": this.state.email,
-                   "password":this.state.password
+                   username:this.state.username,
+                   email: this.state.email,
+                   password:this.state.password
                }
-           }
-           try {          
-             await   fetch(`/api/users`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)})
+           }        
+                fetch(`/api/users`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(user)})
              .then((res) => {
                 if(!res.ok){
                   throw new Error(res.statusText)
@@ -40,18 +37,11 @@ class SignUp extends React.Component{
                   return res.json()
                 }
                 })
-                .then((data) => localStorage.setItem('token',data.user.token))
-                .then((data) => console.log(data.user))
+                .then((data) => localStorage.setItem('user',JSON.stringify(data.user)))
                 .then(() => this.setState({isUserSignup:true}))
-                .catch((error) => this.setState({pageError:'Not able to fetch the articles'}))
-
+                .catch((error) => this.setState({pageError:'Not able to signup'}))
                 window.location.href = 'http://localhost:3000/'
-           } catch (error) {
-               console.error('Error',error)
-           }
-
     }
-
 
     handleInput = (event) => {
      const{name,value} = event.target
@@ -74,17 +64,14 @@ class SignUp extends React.Component{
             default:
                 break;
         }
-
     }
 
        
     render(){
-
         if(localStorage.getItem('user')){
             return   <Redirect to='/' />
         } else{
         return(
-
             <section className='h-screen overflow-hidden bg-gray-100 flex items-center justify-center' >
                    <div className=  ' w-96 h-96 p-3    rounded-md shadow-xl'>
                         <div className=''>

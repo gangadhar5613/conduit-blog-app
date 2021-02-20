@@ -55,7 +55,7 @@ class Login extends React.Component{
         }else{
           return res.json()
         }
-       })
+        })
         .then((data) => localStorage.setItem('user',JSON.stringify(data.user)))
         .then(() => this.setState({isUserLoggedin:true}))
         .catch((error) => this.setState({pageError:'Not able to fetch the articles'}))

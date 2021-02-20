@@ -1,11 +1,15 @@
 import { data } from 'autoprefixer'
 import { Editor } from 'draft-js'
 import React from 'react'
-import {Link} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 import Loader from './Loader'
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm'
 import Comment from './Comment'
+// import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+// import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+// import js from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
+// // SyntaxHighlighter.registerLanguage('javascript', js);
 
 class SingleArticle extends React.Component{
     constructor(props){
@@ -14,7 +18,9 @@ class SingleArticle extends React.Component{
             article:null,
             comment:'',
             allComments:null,
-            pageError:''
+            pageError:'',
+            isArticleDeleted:false,
+
 
         
         }
@@ -79,6 +85,22 @@ class SingleArticle extends React.Component{
 
     }
 
+    handleDeleteArticle = (slug) => {
+
+        fetch(`/api/articles/${slug}`,{method:'DELETE',headers : {"Content-Type":'application/json',"Authorization":JSON.parse(localStorage.getItem('user')).token}})
+        .then((res)=> {
+            if(!res.ok){
+                throw new Error(res.statusText)
+            }else{
+                return res.json()
+            }
+        })
+        .then((article) => this.setState({isArticleDeleted:true}) )
+        .catch((error) => this.setState({pageError:'Not able to delete the article'}) )
+        window.location.href = 'http://localhost:3000'
+
+    }
+
     handleDeleteComment = (event) => {
         event.preventDefault();
         const commentId = event.target.id
@@ -92,10 +114,14 @@ class SingleArticle extends React.Component{
             }
         })
         .then((data) => console.log(data))
-        .catch((error) => this.setState({pageError:'Not able to delete the comment'}))        
+        .catch((error) => this.setState({pageError:'Not able to delete the comment'}))     
+         window.location.reload()
     }
 
     render(){
+        if(this.state.isArticleDeleted){
+            <Redirect to='/' />
+        }
         if(this.state.pageError){
             return <p className='my-20 text-3xl text-center text-shadow-sm'>{this.state.pageError}</p>
         }
@@ -103,11 +129,11 @@ class SingleArticle extends React.Component{
             <article className='flex items-center my-20 px-60 justify-center container'>
                     {
                         (!this.state.article ? <Loader /> :
-                            <section className='article-body'>
+                            <section className='article-body relative'>
                                 <div>
                                     <div className='flex flex-row my-5 items-center '>
                                         <div className='w-10  '>
-                                            <img className='w-full h-10 rounded-full' src='/images/user-1.jpg' alt=''></img>
+                                            <img className='w-full h-10 rounded-full' src={this.state.article.article.author.image ? this.state.article.article.author.image : '/images/user-1.jpg'  } alt={this.state.article.article.slug}></img>
                                         </div>
                                         <div className='flex mx-2 my-1 flex-col'>
                                             <Link >
@@ -117,19 +143,28 @@ class SingleArticle extends React.Component{
                                         </div>
                                         {
                                            ((JSON.parse(localStorage.getItem('user')).username === this.state.article.article.author.username) ?
+                                           <div className='flex flex-row'>
                                             <Link to={`/article/${this.state.article.article.slug}/edit`} >
                                                 <i className="fas text-4xl mx-2 text-red-400 cursor-pointer fa-edit"></i>
                                             </Link>
+                                            <div>
+                                             <i onClick={() => this.handleDeleteArticle(this.state.article.article.slug)} className="far text-3xl text-red-700 cursor-pointer mx-2 fa-trash-alt"></i>
+                                            </div>
+                                          </div>
                                              : '')
                                         }
+                                         <div className='bg-red-500 cursor-pointer absolute right-0 text-white px-4 py-1 inline-block  rounded-sm'>
+                                               <h3>1</h3>
+                                               <i class="fas fa-heart"></i>
+                                        </div>
                                     </div>
                                     <div className='flex flex-col'>
                                         <h2 className='text-3xl my-2 font-bold'>{this.state.article.article.title}</h2>
                                         <p className=' text-md text-gray-500 border-2 p-4  text-justify h-full '>{this.state.article.article.description}</p>
                                     </div>
                                     <div>
-                                         <div className='border-2 border-green-600 p-4 my-4'>
-                                             <ReactMarkdown source={this.state.article.article.body}  />
+                                         <div className='border-2 markdown border-green-600 p-4 my-4'>
+                                             {<ReactMarkdown  source={this.state.article.article.body}  />}
                                          </div>
                                     </div>
                                     
@@ -149,7 +184,7 @@ class SingleArticle extends React.Component{
                                                 (  ! (localStorage.getItem('user')) ? '' : 
                                                     <div className='flex flex-row p-2 items-center'>
                                                        <textarea onChange={this.handleComment} type='textarea' rows='2' cols='50' className='w-full border-2 shadow border-transparent focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent ' name='comment' id='comment' placeholder='Add your comment' ></textarea>
-                                                      <button onClick={this.submitComment}  type='submit' className='text-sm bg-black text-white py-2 px-6 w-40 mx-6'>Add Comment</button>
+                                                      <button onSubmit={this.submitComment}  type='submit' className='text-sm bg-black text-white py-2 px-6 w-40 mx-6'>Add Comment</button>
                                                     </div> 
                                                 )
                                               }
@@ -158,7 +193,7 @@ class SingleArticle extends React.Component{
                                                        (!this.state.allComments ?  'Add Comments' : 
                                                              this.state.allComments.map((comment) => {
                                                                  return(
-                                                                       <Comment key={comment.id} comment={comment} />
+                                                                       <Comment key={comment.id} handleDeleteComment={this.handleDeleteComment} comment={comment} />
                                                                  )
                                                              })
                                                        )

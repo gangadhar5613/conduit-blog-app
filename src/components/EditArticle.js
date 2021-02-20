@@ -52,6 +52,7 @@ class EditArticle extends React.Component{
             case 'body':
                 errors.body = value.trim().length >= 200  ? '' : 'Body must be atleast 200 characters'
                 this.setState({body:value})
+                break
            default:
                break;
        }

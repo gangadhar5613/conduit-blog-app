@@ -10,16 +10,16 @@ function Comment(props){
                             </div>
                             <div className='flex mx-2 my-1 flex-col'>
                                 <Link >
-                                    <h2 className='text-xs font-bold hover:underline text-shadow-sm text-red-800'>{this.state.article.article.author.username}</h2>
+                                    <h2 className='text-xs font-bold hover:underline text-shadow-sm text-red-800'>{JSON.parse(localStorage.getItem('user')).username}</h2>
                                 </Link>
-                                <h3 className='text-xs text-gray-500'>{this.state.article.article.createdAt.toLocaleString()}</h3>
+                                <h3 className='text-xs text-gray-500'>11/02/2020</h3>
                             </div>
                         </div>
                         <div className='mx-5'>
                             <h3 className='text-md font-bold'>{props.comment.body}</h3>
                         </div>
                         <div>
-                            <button onClick={this.handleDeleteprops.Comment} id={props.comment._id} className='  shadow-lg bg-gray-100 py-2 px-4'>Delete</button>
+                            <button onClick={props.handleDeleteComment} id={props.comment._id} className='  shadow-lg bg-gray-100 py-2 px-4'>Delete</button>
                         </div>
                 </div>
         </>

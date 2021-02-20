@@ -1,7 +1,8 @@
 import Home from './Home'
 import React from 'react'
 import '../css/tailwind.css'
-import {BrowserRouter,Route,Redirect,Switch} from 'react-router-dom'
+import '../css/markdown.css'
+import {BrowserRouter,Route,Switch} from 'react-router-dom'
 import Header from './Header'
 import SignUp from './SignUp'
 import NewPost from './Newpost'
@@ -44,11 +45,11 @@ function App(){
                     <NewPost />
                 </Route>
 
-                <Route path='/user/profile' exact >
+                <Route path='/user/profile/update' exact >
                     <UserProfile />
                 </Route>
-                <Route path='/user' exact >
-                    <User />
+                <Route path='/user/profile/:username' exact component={User} >
+                   
                 </Route>
                 <Route path='*' exact>
                     <NoMatch />

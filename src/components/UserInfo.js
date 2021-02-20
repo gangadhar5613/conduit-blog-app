@@ -53,11 +53,22 @@ class UserInfo extends React.Component{
                                     </Link>
                                 </div>
                             </div>
-                            <div className='my-5'>
-                                <Link to='/user/profile/' className='bg-white text-black px-6 py-2 rounded-md'>
+                            {
+                              (JSON.parse(localStorage.getItem('user')).username === this.props.match.params.username ? 
+                              <div className='my-5'>
+                                <Link to='/user/profile/update' className='bg-white text-black px-6 py-2 rounded-md'>
                                     Update Profile
                                 </Link>
-                            </div>
+                              </div>
+                              :
+
+                              <div className='my-5'>
+                                <Link to='/user/profile/' className='bg-white text-black px-6 py-2 rounded-md'>
+                                    Follow User
+                                </Link>
+                              </div>
+                              )
+                            }
                     </div>
                 </div>
                 <div className='flex flex-col'>
@@ -66,6 +77,10 @@ class UserInfo extends React.Component{
                          <h2 onClick={this.handleFavoriterticles} className='bg-black text-white mx-5 cursor-pointer  px-6 py-2 rounded'>Favorited Articles</h2>
                     </div>
                     <div>
+                        {
+                          (!this.state.allArticles ? <Loader /> : (  (!this.state.allArticles.length > 0 ? <h2 className='text-center text-3xl text-shadow-sm '>No articles posted yet</h2> : '')))
+                        }
+
                          {
                              (!this.state.allArticles ?  <Loader /> :
                                    this.state.allArticles.map((article) => {
@@ -83,6 +98,7 @@ class UserInfo extends React.Component{
 
 function Card(props){
     return(
+    <Link to={`/article/${props.article.slug}`}>
         <div className="px-4   bg-transparent py-2 mx-60 my-4 rounded  shadow-md  flex flex-row items-center  ">
         <div className=" flex flex-col justify-between ">
           <img
@@ -116,6 +132,7 @@ function Card(props){
           </div>
         </div>
       </div>
+    </Link>
     )
 }
 
