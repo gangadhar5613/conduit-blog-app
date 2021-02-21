@@ -66,6 +66,7 @@ class SingleArticle extends React.Component{
     }
 
     submitComment = async (event) => {
+        console.log('hello')
        event.preventDefault();
         const comment = {
             "comment":{
@@ -184,7 +185,7 @@ class SingleArticle extends React.Component{
                                                 (  ! (localStorage.getItem('user')) ? '' : 
                                                     <div className='flex flex-row p-2 items-center'>
                                                        <textarea onChange={this.handleComment} type='textarea' rows='2' cols='50' className='w-full border-2 shadow border-transparent focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent ' name='comment' id='comment' placeholder='Add your comment' ></textarea>
-                                                      <button onSubmit={this.submitComment}  type='submit' className='text-sm bg-black text-white py-2 px-6 w-40 mx-6'>Add Comment</button>
+                                                      <button onClick={this.submitComment}  type='submit' className='text-sm bg-black text-white py-2 px-6 w-40 mx-6'>Add Comment</button>
                                                     </div> 
                                                 )
                                               }
